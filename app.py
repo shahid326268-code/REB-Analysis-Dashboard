@@ -1,35 +1,35 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from google.oauth2.service_account import Credentials
+from oauth2client.service_account import ServiceAccountCredentials
 
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="REB Analysis Dashboard", layout="wide")
 st.title("📊 REB Electricity Unit Analysis")
 
-
 # ১. ডাটা লোড করার ফাংশন
 def load_data():
     try:
-        json_file = 'service-account.json'
-        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        creds = Credentials.from_service_account_file(json_file, scopes=scopes)
+        # Secrets থেকে ক্রেডেনশিয়াল লোড করা
+        creds_dict = st.secrets["GOOGLE_SHEETS"]
+        # gspread এর জন্য উপযুক্ত ফরম্যাট
+        scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scopes)
         client = gspread.authorize(creds)
 
         # আপনার শিট আইডি
         sheet_id = '1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU'
         sheet = client.open_by_key(sheet_id).sheet1
 
-        # সব ডাটা নিয়ে আসা
+        # সব ডাটা নিয়ে আসা
         data = sheet.get_all_records()
-        return pd.DataFrame(data)
+        return pd.DataFrame(data), client
     except Exception as e:
         st.error(f"ডাটা লোড হচ্ছে না: {e}")
-        return pd.DataFrame()
-
+        return pd.DataFrame(), None
 
 # ডাটা লোড করা
-df = load_data()
+df, client = load_data()
 
 # ডাটা প্রদর্শন করা
 if not df.empty:
@@ -48,15 +48,14 @@ if not df.empty:
         t_cost = st.number_input("Total_Cost", value=0.0)
 
         submitted = st.form_submit_button("Save Data")
-        if submitted:
-            # গুগল শিটে ডাটা পাঠানো
-            json_file = 'service-account.json'
-            scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-            creds = Credentials.from_service_account_file(json_file, scopes=scopes)
-            client = gspread.authorize(creds)
-            sheet = client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1
-
-            sheet.append_row([new_month, m5000, m5010, work_day, t_unit, d_cost, r_cost, t_cost])
-            st.success("Data Saved! Please Refresh.")
+        
+        # ডাটা সেভ করার লজিক
+        if submitted and client:
+            try:
+                sheet = client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1
+                sheet.append_row([new_month, m5000, m5010, work_day, t_unit, d_cost, r_cost, t_cost])
+                st.success("Data Saved! Please Refresh to see updates.")
+            except Exception as e:
+                st.error(f"ডাটা সেভ হয়নি: {e}")
 else:
-    st.warning("ফাইলে কোনো ডাটা পাওয়া যায়নি।")
+    st.warning("ফাইলে কোনো ডাটা পাওয়া যায়নি বা কানেকশনে সমস্যা আছে।")
