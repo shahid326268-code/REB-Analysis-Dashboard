@@ -10,7 +10,7 @@ st.set_page_config(page_title="REB Analysis Dashboard", layout="wide")
 def check_password():
     # পাসওয়ার্ড যাচাই করার লজিক
     def password_entered():
-        if st.session_state["password_input"] == "admin123": # আপনার পাসওয়ার্ড এখানে
+        if st.session_state["Jmi@1234"] == "admin123": # আপনার পাসওয়ার্ড এখানে
             st.session_state["password_correct"] = True
         else:
             st.session_state["password_correct"] = False
