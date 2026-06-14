@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="REB Analysis Dashboard", layout="wide")
+st.subheader("JMI Syringes & Medical Devices Ltd")
 st.title("📊 REB Electricity Unit Analysis")
 
 # ১. ডাটা লোড করার ফাংশন
