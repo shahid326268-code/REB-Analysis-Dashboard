@@ -45,23 +45,15 @@ if not df.empty:
     
     with col1:
         st.write("### Monthly Total Unit Consumption")
-        # 'Month' কলামকে ইনডেক্স হিসেবে সেট করে গ্রাফ তৈরি
-        df_chart = df.set_index('Month')
-        # ডাটা লোড করার পর এই অংশটি যোগ করুন
-if not df.empty:
-    # মাসের একটি নির্দিষ্ট অর্ডার তৈরি করুন
-    month_order = ['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026']
-    
-    # ডাটা ফ্রেমটিকে ওই অর্ডার অনুযায়ী সাজান
-    df['Month'] = pd.Categorical(df['Month'], categories=month_order, ordered=True)
-    df = df.sort_values('Month')
-    
-    # এখন বাকি গ্রাফের কোডগুলো লিখুন
-    # ...
-        st.line_chart(df_chart['Total Unit'])
-        # এখানে আপনার নতুন গ্রাফের হেডারটি যোগ করুন
-        st.write("### Electricity Cost per Piece") 
-        st.line_chart(df_chart['Electricity Cost per Piece (Tk/pcs)'])
+            # 'Month' কলামকে ইনডেক্স হিসেবে সেট করে গ্রাফ তৈরি
+            # ডাটা লোড করার পর এই অংশটি যোগ করুন
+            if not df.empty:
+                # মাসের একটি নির্দিষ্ট অর্ডার তৈরি করুন
+                month_order = ['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026']
+
+                # ডাটা ফ্রেমটিকে ওই অর্ডার অনুযায়ী সাজান
+                df['Month'] = pd.Categorical(df['Month'], categories=month_order, ordered=True)
+                df = df.sort_values('Month')
         
     with col2:
         st.write("### Monthly Total Cost Analysis")
