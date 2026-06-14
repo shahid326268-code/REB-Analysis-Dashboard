@@ -4,45 +4,47 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # পেজ কনফিগারেশন
-st.set_page_config(page_title="JMI Engineering Admin", layout="wide", page_icon="⚡")
+st.set_page_config(page_title="JMI Engineering Admin", layout="centered")
 
-# পাসওয়ার্ড চেক ফাংশন
+# কাস্টম স্টাইল (প্রফেশনাল লুকের জন্য)
+st.markdown("""
+    <style>
+    .main-title { text-align: center; color: #008080; font-family: sans-serif; }
+    .sub-title { text-align: center; color: #555; margin-bottom: 30px; }
+    .login-container { 
+        padding: 40px; 
+        border: 1px solid #ddd; 
+        border-radius: 15px; 
+        background-color: #f9f9f9; 
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# লগইন ফাংশন
 def check_password():
-    # স্টাইলড লগইন পেজ
-    st.markdown("""
-        <style>
-        .login-box {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f0f2f6;
-            text-align: center;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>JMI Syringes & Medical Devices Ltd</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 class='sub-title'>Engineering Department</h3>", unsafe_allow_html=True)
     
-    st.markdown("<div class='login-box'><h1>JMI Engineering Admin</h1><p>Please enter your secure password to access the dashboard.</p></div>", unsafe_allow_html=True)
-    
-    def password_entered():
-        if st.session_state["password_input"] == "Jmi@2026": # আপনার পাসওয়ার্ড
-            st.session_state["password_correct"] = True
-        else:
-            st.session_state["password_correct"] = False
+    # লগইন বক্স
+    with st.container():
+        st.markdown("<div class='login-container'>", unsafe_allow_html=True)
+        username = st.text_input("👤 Username")
+        password = st.text_input("🔑 Password", type="password")
+        login_button = st.button("Login")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if "password_correct" not in st.session_state:
-        st.text_input("Password", type="password", on_change=password_entered, key="password_input")
-        return False
-    elif not st.session_state["password_correct"]:
-        st.text_input("Password", type="password", on_change=password_entered, key="password_input")
-        st.error("❌ Access Denied: Incorrect Password")
-        return False
-    else:
-        return True
+    if login_button:
+        if username == "admin" and password == "Jmi@2026": # আপনার ইউজারনেম ও পাসওয়ার্ড
+            st.session_state["password_correct"] = True
+            st.rerun()
+        else:
+            st.error("Invalid Username or Password")
+            return False
+    return st.session_state.get("password_correct", False)
 
 # মূল অ্যাপ
 if check_password():
-    # অ্যাপের লুক আরও প্রফেশনাল করার জন্য কন্টেইনার ব্যবহার
-    st.subheader("JMI Syringes & Medical Devices Ltd")
-    st.title("📊 REB Electricity Unit Analysis - Admin Dashboard")
+    st.set_page_config(layout="wide") # লগইন হওয়ার পর ওয়াইড লেআউট
+    st.title("📊 REB Electricity Unit Analysis - Dashboard")
     
-    # [আপনার ডাটা লোড ও গ্রাফের আগের কোডগুলো এখানে বসিয়ে দিন]
-    # (আমি আগেরবার যে কোডটি দিয়েছিলাম সেটিই ব্যবহার করুন)
+    # [এখানে আপনার আগের ডাটা লোডিং এবং গ্রাফের কোডগুলো বসিয়ে দিন]
