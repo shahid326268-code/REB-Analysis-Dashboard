@@ -8,6 +8,11 @@ st.set_page_config(page_title="JMI Engineering Admin", layout="wide")
 
 # --- লগইন ফাংশন ---
 def check_password():
+    # যদি আগে থেকেই লগইন করা থাকে, তবে সরাসরি True রিটার্ন করবে
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # লগইন পেজ দেখানো (লগইন করা না থাকলে)
     st.markdown("<h1 style='text-align: center;'>JMI Syringes & Medical Devices Ltd</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>Engineering Department</h3>", unsafe_allow_html=True)
     
@@ -19,14 +24,14 @@ def check_password():
     if login_button:
         if username == "admin" and password == "Jmi@2026":
             st.session_state["password_correct"] = True
-            st.rerun()
+            st.rerun() # অ্যাপ রিলোড দিয়ে মূল ড্যাশবোর্ডে নিয়ে যাবে
         else:
             st.error("Invalid Username or Password")
-            return False
-    return st.session_state.get("password_correct", False)
+    return False
 
 # --- মূল অ্যাপের লজিক ---
 if check_password():
+    # লগইন সফল হলে কেবল তখনই এই অংশটুকু চলবে
     st.title("📊 REB Electricity Unit Analysis - Dashboard")
 
     # ডাটা লোড করার ফাংশন
