@@ -8,20 +8,23 @@ st.set_page_config(page_title="REB Analysis Dashboard", layout="wide")
 
 # পাসওয়ার্ড চেক ফাংশন
 def check_password():
+    # ইউজার যদি পাসওয়ার্ড বক্সে কিছু লেখে
     def password_entered():
-        if st.session_state["jmi@123456"] == "admin123": # এখানে আপনার পাসওয়ার্ড পরিবর্তন করতে পারেন
+        if st.session_state["password_input"] == "admin123": # আপনার পাসওয়ার্ড এখানে
             st.session_state["password_correct"] = True
-            del st.session_state["password"]
         else:
             st.session_state["password_correct"] = False
 
+    # যদি ইউজার আগে পাসওয়ার্ড না দিয়ে থাকে
     if "password_correct" not in st.session_state:
-        st.text_input("Please enter password to access the dashboard", type="password", on_change=password_entered, key="password")
+        st.text_input("Please enter password to access:", type="password", on_change=password_entered, key="password_input")
         return False
+    # যদি পাসওয়ার্ড ভুল হয়
     elif not st.session_state["password_correct"]:
-        st.text_input("Please enter password to access the dashboard", type="password", on_change=password_entered, key="password")
+        st.text_input("Please enter password to access:", type="password", on_change=password_entered, key="password_input")
         st.error("❌ ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।")
         return False
+    # যদি পাসওয়ার্ড সঠিক হয়
     else:
         return True
 
@@ -30,7 +33,6 @@ if check_password():
     st.subheader("JMI Syringes & Medical Devices Ltd")
     st.title("📊 REB Electricity Unit Analysis")
 
-    # ডাটা লোড করার ফাংশন
     def load_data():
         try:
             creds_dict = st.secrets["GOOGLE_SHEETS"]
@@ -70,7 +72,6 @@ if check_password():
             st.write("### Monthly Total Cost Analysis")
             st.bar_chart(df_chart['Total_Cost'])
 
-        # এভারেজ মাসিক ইউনিটের ম্যাট্রিক কার্ড
         st.markdown("---")
         avg_unit = df['Total Unit'].mean()
         avg_cost = df['Total_Cost'].mean()
@@ -78,7 +79,6 @@ if check_password():
         m1.metric("Average Monthly Unit", f"{avg_unit:,.2f}")
         m2.metric("Average Monthly Cost", f"{avg_cost:,.2f} BDT")
 
-        # ডাটা এন্ট্রি ফর্ম
         st.sidebar.subheader("Add New Month Data")
         with st.sidebar.form("entry_form", clear_on_submit=True):
             new_month = st.text_input("Month (e.g., Jun-2026)")
