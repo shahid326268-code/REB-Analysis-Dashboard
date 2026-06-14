@@ -48,6 +48,9 @@ if not df.empty:
         # 'Month' কলামকে ইনডেক্স হিসেবে সেট করে গ্রাফ তৈরি
         df_chart = df.set_index('Month')
         st.line_chart(df_chart['Total Unit'])
+        # এখানে আপনার নতুন গ্রাফের হেডারটি যোগ করুন
+        st.write("### Electricity Cost per Piece") 
+        st.line_chart(df_chart['Electricity Cost per Piece (Tk/pcs)'])
         
     with col2:
         st.write("### Monthly Total Cost Analysis")
