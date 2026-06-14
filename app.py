@@ -52,6 +52,7 @@ if not df.empty:
     with col2:
         st.write("### Monthly Total Cost Analysis")
         st.bar_chart(df_chart['Total_Cost'])
+        st.line_chart(df[['Electricity Cost per Piece (Tk/pcs)']])
 
     # এভারেজ মাসিক ইউনিটের জন্য ম্যাট্রিক কার্ড
     st.markdown("---")
