@@ -34,7 +34,33 @@ df, client = load_data()
 
 # ডাটা প্রদর্শন করা
 if not df.empty:
+    # ডাটা লোড করার পর, নিচের অংশটি যোগ করুন
     st.dataframe(df, use_container_width=True)
+    
+    st.markdown("---")
+    st.subheader("📊 Analytical Visualizations")
+    
+    # কলাম তৈরি করে পাশাপাশি গ্রাফ বসানো
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("### Monthly Total Unit Consumption")
+        # 'Month' কলামকে ইনডেক্স হিসেবে সেট করে গ্রাফ তৈরি
+        df_chart = df.set_index('Month')
+        st.line_chart(df_chart['Total Unit'])
+        
+    with col2:
+        st.write("### Monthly Total Cost Analysis")
+        st.bar_chart(df_chart['Total_Cost'])
+
+    # এভারেজ মাসিক ইউনিটের জন্য ম্যাট্রিক কার্ড
+    st.markdown("---")
+    avg_unit = df['Total Unit'].mean()
+    avg_cost = df['Total_Cost'].mean()
+    
+    m1, m2 = st.columns(2)
+    m1.metric("Average Monthly Unit", f"{avg_unit:,.2f}")
+    m2.metric("Average Monthly Cost", f"{avg_cost:,.2f} BDT")
 
     # ২. সাইডবার - ডাটা এন্ট্রি ফর্ম
     st.sidebar.subheader("Add New Month Data")
