@@ -106,9 +106,27 @@ st.download_button("📥 Download Report", data=csv, file_name="REB_Report.csv",
 st.sidebar.header("➕ Add New Data")
 with st.sidebar.form("add_form", clear_on_submit=True):
     month = st.selectbox("Month", month_order)
-    t_unit = st.number_input("Total Unit", value=0.0)
-    r_cost = st.number_input("REB Cost", value=0.0)
-    t_cost = st.number_input("Total Cost", value=0.0)
+    meter_5000 = st.number_input("Meter 5000", value=0.0)
+    meter_5010 = st.number_input("Meter 5010", value=0.0)
+    working_day = st.number_input("Working Day", value=0)
+    total_unit = st.number_input("Total Unit", value=0.0)
+    diesel_cost = st.number_input("Diesel Cost", value=0.0)
+    reb_cost = st.number_input("REB Cost", value=0.0)
+    total_cost = st.number_input("Total Cost", value=0.0)
+    # আপনার শিটের বাকি কলামগুলো এখানে যোগ করুন
+    avg_daily_cons = st.number_input("Avg Daily Cons.", value=0.0)
+    avg_daily_cost = st.number_input("Avg Daily Cost", value=0.0)
+    elec_cost_piece = st.number_input("Electricity Cost/Piece", value=0.0)
+    gen_diesel = st.number_input("Generator Diesel", value=0.0)
+    reb_failure = st.number_input("REB Grid Failure", value=0.0)
+    prod_blister = st.number_input("Prod Blister", value=0.0)
+    prod_molding = st.number_input("Prod Molding", value=0.0)
+
     if st.form_submit_button("Save Data"):
-        client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1.append_row([month, 0, 0, 0, t_unit, 0, r_cost, t_cost, 0])
-        st.success("Data Saved!")
+        # শিটের কলাম অনুযায়ী সঠিক অর্ডারে ডাটা পাঠান
+        new_row = [month, meter_5000, meter_5010, working_day, total_unit, diesel_cost, 
+                   reb_cost, total_cost, avg_daily_cons, avg_daily_cost, elec_cost_piece, 
+                   gen_diesel, reb_failure, prod_blister, prod_molding]
+        client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1.append_row(new_row)
+        st.success("Data Saved Successfully!")
+        st.rerun() # ডাটা সেভ হওয়ার পর অ্যাপটি রিলোড করবে
