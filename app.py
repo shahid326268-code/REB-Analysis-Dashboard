@@ -53,7 +53,7 @@ df, client = load_data()
 
 # SIDEBAR FILTER
 st.sidebar.header("🔎 Filters")
-month_order = ['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026']
+month_order = ['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026'  'July-2026', 'Aug-2026', 'Sep-2026', 'Oct-2026', 'Nov-2026', 'Dec-2026']
 df['Month'] = pd.Categorical(df['Month'], categories=month_order, ordered=True)
 df = df.sort_values('Month')
 
