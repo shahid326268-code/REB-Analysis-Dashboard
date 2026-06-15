@@ -65,25 +65,23 @@ if selected_month != "All":
     filtered_df = df[df["Month"].astype(str) == selected_month]
 
 # KPI CALCULATIONS
-# --- KPI CALCULATIONS ---
-# বর্তমান KPI গুলোর হিসাব
 total_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').sum()
 reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').sum()
-cost_per_piece = pd.to_numeric(filtered_df['Electricity Cost per Piece (Tk/pcs)'], errors='coerce').mean()
+# কলামের নাম শিটে যেভাবে আছে হুবহু দিতে হবে
+cost_per_piece = pd.to_numeric(filtered_df.get('Electricity Cost per Piece (Tk/pcs)', 0), errors='coerce').mean()
+diesel_cost = pd.to_numeric(filtered_df.get('Diesel_Cost', 0), errors='coerce').sum()
 
-# নতুন এভারেজ হিসাব
+# এভারেজ হিসাব
 avg_monthly_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').mean()
 avg_monthly_reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').mean()
 
-# --- KPI METRICS ---
-# প্রথম সারি (৩টি কার্ড)
+# KPI METRICS
 k1, k2, k3 = st.columns(3)
 k1.metric("⚡ Total Unit", f"{total_unit:,.0f}")
 k2.metric("💰 REB Cost", f"৳ {reb_cost:,.0f}")
 k3.metric("📈 Cost/Piece", f"৳ {cost_per_piece:.2f}")
 
-# দ্বিতীয় সারি (নতুন ২টি কার্ড)
-st.write("---") # মাঝখানে একটি দাগ দেওয়ার জন্য
+st.write("---")
 k4, k5 = st.columns(2)
 k4.metric("📊 Avg Monthly Unit", f"{avg_monthly_unit:,.0f}")
 k5.metric("💵 Avg Monthly REB Cost", f"৳ {avg_monthly_reb_cost:,.0f}")
@@ -95,7 +93,7 @@ with c1:
     st.bar_chart(filtered_df.set_index("Month")[["REB_Cost"]])
 with c2:
     pie_data = pd.DataFrame({"Type": ["REB", "Diesel"], "Amount": [reb_cost, diesel_cost]})
-    fig = px.pie(pie_data, names="Type", values="Amount", title="Cost Distribution")
+    fig = px.pie(pie_data, names="Type", values="Amount", title="Cost Distribution (REB vs Diesel)")
     st.plotly_chart(fig, use_container_width=True)
 
 # DATA TABLE & DOWNLOAD
