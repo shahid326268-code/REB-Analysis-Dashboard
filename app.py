@@ -5,16 +5,13 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(page_title="JMI Engineering Admin", layout="wide")
 
-# --- ১. লগইন স্টেট চেক ---
+# --- ১. লগইন লজিক ---
 if "password_correct" not in st.session_state:
     st.session_state["password_correct"] = False
 
-# --- ২. লগইন ফাংশন ---
 def login_screen():
-    # প্রফেশনাল হেডার
     st.markdown("<h1 style='text-align: center; color: #008080;'>JMI Syringes & Medical Devices Ltd</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: #555;'>Engineering Department</h3>", unsafe_allow_html=True)
-    
+    st.markdown("<h3 style='text-align: center;'>Engineering Department</h3>", unsafe_allow_html=True)
     with st.container():
         username = st.text_input("👤 Username")
         password = st.text_input("🔑 Password", type="password")
@@ -25,18 +22,18 @@ def login_screen():
             else:
                 st.error("Invalid Username or Password")
 
-# --- ৩. মূল অ্যাপ ---
+# --- ২. মূল ড্যাশবোর্ড ---
 if not st.session_state["password_correct"]:
     login_screen()
 else:
-    # লগইন হওয়ার পর হেডার
-    st.markdown("<h1 style='text-align: center;'>📊 REB Electricity Unit Analysis - Dashboard</h1>", unsafe_allow_html=True)
-    
-    if st.button("Log out"):
+    # লগআউট বাটন ও হেডার
+    c1, c2 = st.columns([6, 1])
+    c1.markdown("<h1 style='text-align: center;'>📊 REB Electricity Unit Analysis</h1>", unsafe_allow_html=True)
+    if c2.button("Log out"):
         st.session_state["password_correct"] = False
         st.rerun()
     
-    # ডাটা লোড ফাংশন
+    # ডাটা লোড
     def load_data():
         try:
             creds_dict = st.secrets["GOOGLE_SHEETS"]
@@ -45,27 +42,35 @@ else:
             client = gspread.authorize(creds)
             sheet = client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1
             return pd.DataFrame(sheet.get_all_records()), client
-        except Exception as e:
-            st.error(f"ডাটা লোড হচ্ছে না: {e}")
+        except:
             return pd.DataFrame(), None
 
     df, client = load_data()
 
     if not df.empty:
-        # ডাটা টেবিল
+        # ডাটা সাজানো (মাসের ক্রমানুসারে)
+        df['Month'] = pd.Categorical(df['Month'], categories=['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026'], ordered=True)
+        df = df.sort_values('Month')
+        
+        # টেবিল প্রদর্শন
         st.dataframe(df, use_container_width=True)
+        
+        # গ্রাফের জন্য ডাটা সেটআপ
+        df_chart = df.set_index('Month')
         
         st.subheader("📊 Analytical Visualizations")
         col1, col2 = st.columns(2)
         with col1:
-            st.line_chart(df[['Total Unit']])
+            st.write("Total Unit Consumption")
+            st.line_chart(df_chart['Total Unit'])
         with col2:
-            st.bar_chart(df[['Total_Cost']])
+            st.write("Total Cost Analysis")
+            st.bar_chart(df_chart['Total_Cost'])
 
-        # --- সাইডবার ডাটা এন্ট্রি ফর্ম ---
+        # সাইডবার ফর্ম
         st.sidebar.header("Add New Month Data")
         with st.sidebar.form("entry_form", clear_on_submit=True):
-            new_month = st.text_input("Month")
+            new_month = st.selectbox("Select Month", ['Jan-2026', 'Feb-2026', 'Mar-2026', 'Apr-2026', 'May-2026', 'Jun-2026'])
             m5000 = st.number_input("Meter 5000", value=0.0)
             m5010 = st.number_input("Meter 5010", value=0.0)
             work_day = st.number_input("Working_Day", value=0)
@@ -75,8 +80,6 @@ else:
             t_cost = st.number_input("Total_Cost", value=0.0)
             cp = st.number_input("Cost per Piece", value=0.0)
 
-            submitted = st.form_submit_button("Save Data")
-            if submitted and client:
-                sheet = client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1
-                sheet.append_row([new_month, m5000, m5010, work_day, t_unit, d_cost, r_cost, t_cost, cp])
+            if st.form_submit_button("Save Data"):
+                client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1.append_row([new_month, m5000, m5010, work_day, t_unit, d_cost, r_cost, t_cost, cp])
                 st.success("Data Saved!")
