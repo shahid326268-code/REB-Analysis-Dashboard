@@ -5,13 +5,15 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(page_title="JMI Engineering Admin", layout="wide")
 
-# --- ১. লগইন লজিক ---
+# --- ১. লগইন স্টেট চেক ---
 if "password_correct" not in st.session_state:
     st.session_state["password_correct"] = False
 
+# --- ২. লগইন ফাংশন ---
 def login_screen():
-    st.markdown("<h1 style='text-align: center;'>JMI Syringes & Medical Devices Ltd</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center;'>Engineering Department</h3>", unsafe_allow_html=True)
+    # প্রফেশনাল হেডার
+    st.markdown("<h1 style='text-align: center; color: #008080;'>JMI Syringes & Medical Devices Ltd</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #555;'>Engineering Department</h3>", unsafe_allow_html=True)
     
     with st.container():
         username = st.text_input("👤 Username")
@@ -23,17 +25,17 @@ def login_screen():
             else:
                 st.error("Invalid Username or Password")
 
-# --- ২. মূল অ্যাপ (লগইন সফল হলে চলবে) ---
+# --- ৩. মূল অ্যাপ ---
 if not st.session_state["password_correct"]:
     login_screen()
 else:
-    # লগআউট বাটন
+    # লগইন হওয়ার পর হেডার
+    st.markdown("<h1 style='text-align: center;'>📊 REB Electricity Unit Analysis - Dashboard</h1>", unsafe_allow_html=True)
+    
     if st.button("Log out"):
         st.session_state["password_correct"] = False
         st.rerun()
     
-    st.title("📊 REB Electricity Unit Analysis - Dashboard")
-
     # ডাটা লোড ফাংশন
     def load_data():
         try:
@@ -50,7 +52,7 @@ else:
     df, client = load_data()
 
     if not df.empty:
-        # ডাটা টেবিল ও গ্রাফ
+        # ডাটা টেবিল
         st.dataframe(df, use_container_width=True)
         
         st.subheader("📊 Analytical Visualizations")
@@ -61,7 +63,7 @@ else:
             st.bar_chart(df[['Total_Cost']])
 
         # --- সাইডবার ডাটা এন্ট্রি ফর্ম ---
-        st.sidebar.subheader("Add New Month Data")
+        st.sidebar.header("Add New Month Data")
         with st.sidebar.form("entry_form", clear_on_submit=True):
             new_month = st.text_input("Month")
             m5000 = st.number_input("Meter 5000", value=0.0)
