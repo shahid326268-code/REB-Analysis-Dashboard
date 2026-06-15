@@ -65,22 +65,28 @@ if selected_month != "All":
     filtered_df = df[df["Month"].astype(str) == selected_month]
 
 # KPI CALCULATIONS
+# --- KPI CALCULATIONS ---
+# বর্তমান KPI গুলোর হিসাব
 total_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').sum()
 reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').sum()
-total_cost = pd.to_numeric(filtered_df['Total_Cost'], errors='coerce').sum()
-diesel_cost = pd.to_numeric(filtered_df['Diesel_Cost'], errors='coerce').sum()
+cost_per_piece = pd.to_numeric(filtered_df['Electricity Cost per Piece (Tk/pcs)'], errors='coerce').mean()
 
-# KPI METRICS
-# --- KPI CALCULATION ---
-total_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').sum()
-reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').sum()
-cost_per_piece = pd.to_numeric(filtered_df['Electricity Cost per Piece (Tk/pcs)'], errors='coerce').mean() # এখানে আপনার কলামের নাম অনুযায়ী চেক করবেন
+# নতুন এভারেজ হিসাব
+avg_monthly_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').mean()
+avg_monthly_reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').mean()
 
 # --- KPI METRICS ---
-k1, k2, k3, k4 = st.columns(4)
+# প্রথম সারি (৩টি কার্ড)
+k1, k2, k3 = st.columns(3)
 k1.metric("⚡ Total Unit", f"{total_unit:,.0f}")
 k2.metric("💰 REB Cost", f"৳ {reb_cost:,.0f}")
-k3.metric("📈 Cost/Piece", f"৳ {cost_per_piece:.2f}") # এটি আপনার নতুন KPI
+k3.metric("📈 Cost/Piece", f"৳ {cost_per_piece:.2f}")
+
+# দ্বিতীয় সারি (নতুন ২টি কার্ড)
+st.write("---") # মাঝখানে একটি দাগ দেওয়ার জন্য
+k4, k5 = st.columns(2)
+k4.metric("📊 Avg Monthly Unit", f"{avg_monthly_unit:,.0f}")
+k5.metric("💵 Avg Monthly REB Cost", f"৳ {avg_monthly_reb_cost:,.0f}")
 
 # CHARTS
 st.subheader("📈 Analysis & Distribution")
