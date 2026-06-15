@@ -67,11 +67,9 @@ if selected_month != "All":
 # KPI CALCULATIONS
 total_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').sum()
 reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').sum()
-# কলামের নাম শিটে যেভাবে আছে হুবহু দিতে হবে
 cost_per_piece = pd.to_numeric(filtered_df.get('Electricity Cost per Piece (Tk/pcs)', 0), errors='coerce').mean()
 diesel_cost = pd.to_numeric(filtered_df.get('Diesel_Cost', 0), errors='coerce').sum()
 
-# এভারেজ হিসাব
 avg_monthly_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').mean()
 avg_monthly_reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').mean()
 
@@ -113,7 +111,6 @@ with st.sidebar.form("add_form", clear_on_submit=True):
     diesel_cost = st.number_input("Diesel Cost", value=0.0)
     reb_cost = st.number_input("REB Cost", value=0.0)
     total_cost = st.number_input("Total Cost", value=0.0)
-    # আপনার শিটের বাকি কলামগুলো এখানে যোগ করুন
     avg_daily_cons = st.number_input("Avg Daily Cons.", value=0.0)
     avg_daily_cost = st.number_input("Avg Daily Cost", value=0.0)
     elec_cost_piece = st.number_input("Electricity Cost/Piece", value=0.0)
@@ -123,10 +120,15 @@ with st.sidebar.form("add_form", clear_on_submit=True):
     prod_molding = st.number_input("Prod Molding", value=0.0)
 
     if st.form_submit_button("Save Data"):
-        # শিটের কলাম অনুযায়ী সঠিক অর্ডারে ডাটা পাঠান
-        new_row = [month, meter_5000, meter_5010, working_day, total_unit, diesel_cost, 
-                   reb_cost, total_cost, avg_daily_cons, avg_daily_cost, elec_cost_piece, 
-                   gen_diesel, reb_failure, prod_blister, prod_molding]
-        client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1.append_row(new_row)
-        st.success("Data Saved Successfully!")
-        st.rerun() # ডাটা সেভ হওয়ার পর অ্যাপটি রিলোড করবে
+        new_row = [
+            month, meter_5000, meter_5010, working_day, total_unit, diesel_cost,
+            reb_cost, total_cost, avg_daily_cons, avg_daily_cost, elec_cost_piece,
+            gen_diesel, reb_failure, prod_blister, prod_molding
+        ]
+        try:
+            sheet = client.open_by_key('1OOSHOOZWE_1n2GVDbym0P70GNYx0hK26da6oQRh6PbU').sheet1
+            sheet.append_row(new_row)
+            st.success("Data Saved Successfully!")
+            st.rerun() 
+        except Exception as e:
+            st.error(f"Error: {e}")
