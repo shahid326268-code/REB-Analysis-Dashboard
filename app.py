@@ -71,17 +71,22 @@ total_cost = pd.to_numeric(filtered_df['Total_Cost'], errors='coerce').sum()
 diesel_cost = pd.to_numeric(filtered_df['Diesel_Cost'], errors='coerce').sum()
 
 # KPI METRICS
+# --- KPI CALCULATION ---
+total_unit = pd.to_numeric(filtered_df['Total Unit'], errors='coerce').sum()
+reb_cost = pd.to_numeric(filtered_df['REB_Cost'], errors='coerce').sum()
+cost_per_piece = pd.to_numeric(filtered_df['Electricity Cost per Piece (Tk/pcs)'], errors='coerce').mean() # এখানে আপনার কলামের নাম অনুযায়ী চেক করবেন
+
+# --- KPI METRICS ---
 k1, k2, k3, k4 = st.columns(4)
 k1.metric("⚡ Total Unit", f"{total_unit:,.0f}")
 k2.metric("💰 REB Cost", f"৳ {reb_cost:,.0f}")
-k3.metric("🏭 Total Cost", f"৳ {total_cost:,.0f}")
-k4.metric("💵 Cost/Unit", f"৳ {(total_cost/total_unit) if total_unit>0 else 0:,.2f}")
+k3.metric("📈 Cost/Piece", f"৳ {cost_per_piece:.2f}") # এটি আপনার নতুন KPI
 
 # CHARTS
 st.subheader("📈 Analysis & Distribution")
 c1, c2 = st.columns(2)
 with c1:
-    st.bar_chart(filtered_df.set_index("Month")[["REB_Cost", "Total_Cost"]])
+    st.bar_chart(filtered_df.set_index("Month")[["REB_Cost"]])
 with c2:
     pie_data = pd.DataFrame({"Type": ["REB", "Diesel"], "Amount": [reb_cost, diesel_cost]})
     fig = px.pie(pie_data, names="Type", values="Amount", title="Cost Distribution")
